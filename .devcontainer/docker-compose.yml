@@ -1,5 +1,5 @@
 ---
-# Python 3 with Redis
+# Python 3 with MongoDB
 version: "3"
 
 services:
