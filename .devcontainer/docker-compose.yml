@@ -1,0 +1,54 @@
+---
+# Python 3 with Redis
+version: "3"
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    hostname: nyu
+    volumes:
+      - ..:/app
+    ports:
+      - 8000:8000
+    command: sleep infinity
+    environment:
+      FLASK_APP: service:app
+      FLASK_ENV: development
+      # TODO: unverified, need flask to test this
+      DATABASE_URI: mongo://mongo:27017/wishlists
+    networks:
+      - dev
+    depends_on:
+      - mongo
+      - mongo-express
+  mongo:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: wishlists
+    ports:
+      - 27017:27017
+  mongo-express:
+    image: mongo-express
+    restart: always
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: false
+      ME_CONFIG_MONGODB_AUTH_USERNAME: root
+      ME_CONFIG_MONGODB_AUTH_PASSWORD: root
+      ME_CONFIG_BASICAUTH_USERNAME: dev
+      ME_CONFIG_BASICAUTH_PASSWORD: dev
+    depends_on:
+      - mongo
+    ports:
+      - 8081:8081
+
+volumes:
+  mongo:
+
+networks:
+  dev:
