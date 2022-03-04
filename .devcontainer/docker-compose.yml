@@ -14,10 +14,9 @@ services:
       - 8000:8000
     command: sleep infinity
     environment:
-      FLASK_APP: service:app
+      FLASK_APP: app.py
       FLASK_ENV: development
-      # TODO: unverified, need flask to test this
-      DATABASE_URI: mongo://mongo:27017/wishlists
+      DATABASE_URI: mongodb://root:root@mongo:27017/wishlists?authSource=admin
     networks:
       - dev
     depends_on:
@@ -31,6 +30,10 @@ services:
       MONGO_INITDB_DATABASE: wishlists
     ports:
       - 27017:27017
+    volumes:
+      - mongodb_data_container:/data/db
+    networks:
+      - dev
   mongo-express:
     image: mongo-express
     restart: always
@@ -46,9 +49,11 @@ services:
       - mongo
     ports:
       - 8081:8081
+    networks:
+      - dev
 
 volumes:
-  mongo:
+  mongodb_data_container:
 
 networks:
   dev:
