@@ -14,7 +14,7 @@ services:
       - 8000:8000
     command: sleep infinity
     environment:
-      FLASK_APP: service:app
+      FLASK_APP: app.py
       FLASK_ENV: development
       # TODO: unverified, need flask to test this
       DATABASE_URI: mongo://mongo:27017/wishlists
