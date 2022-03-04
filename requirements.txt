@@ -1,6 +1,7 @@
 # Dependencies
 Flask==2.0.2
 python-dotenv==0.19.2
+pymongo==4.0.2
 
 # Runtime
 gunicorn==20.1.0

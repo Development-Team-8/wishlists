@@ -1,6 +1,13 @@
 from flask import Flask, jsonify, url_for, abort
+from pymongo import MongoClient
+import os
 
 app = Flask(__name__)
+
+# Get the database from the environment (12 factor)
+DATABASE_URI = os.getenv("DATABASE_URI", "mongodb://root:root@localhost:27017/wishlists?authSource=admin")
+
+client = MongoClient(DATABASE_URI) 
 
 # HTTP RETURN CODES
 HTTP_200_OK = 200
@@ -19,4 +26,16 @@ def index():
         message="Wishlist Service",
         version="1.0.0"
         #TODO: Add resource URL once implemented using url_for
+    )
+
+
+@app.route("/mongodb/stats")
+def mongodb_status():
+    """Returns basic stats about mongodb"""
+    db = client.admin
+    serverStatusResult = db.command("serverStatus")
+    return jsonify(
+        version=serverStatusResult["version"],
+        uptime=serverStatusResult["uptime"],
+        message="MongoDB Stats"
     )
