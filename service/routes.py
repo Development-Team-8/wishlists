@@ -1,12 +1,11 @@
-from flask import Flask, jsonify, url_for, abort
+from flask import jsonify, url_for, abort
 from pymongo import MongoClient
 from pymodm.connection import connect
 import os
 from datetime import datetime
-from models import Item
+from service.models import Item
+from . import app
 
-app = Flask(__name__)
-app.config.from_object("config")
 
 # Get the database from the environment (12 factor)
 DATABASE_URI = os.getenv("DATABASE_URI", "mongodb://root:root@localhost:27017/wishlists?authSource=admin")
