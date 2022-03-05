@@ -44,10 +44,3 @@ def mongodb_status():
         uptime=serverStatusResult["uptime"],
         message="MongoDB Stats"
     )
-
-
-@app.route("/test")
-def test():
-    item = Item(item_id=1, item_name='test', price=100, discount=2, description="test", date_added=datetime.now()).save()
-    print(item)
-    return jsonify(status=HTTP_200_OK)
