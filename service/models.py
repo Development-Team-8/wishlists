@@ -45,6 +45,7 @@ class Item(MongoModel):
             self.discount = data["discount"]
             self.description = data["description"]
             self.date_added = datetime.strptime(data["date_added"],"%m/%d/%Y, %H:%M:%S")
+            
         except KeyError as error:
             raise DataValidationError("Invalid item: missing " + error.args[0])
         except TypeError as error:

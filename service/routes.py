@@ -7,6 +7,7 @@ from datetime import datetime
 from service.models import Item, Wishlist
 from service import status
 from . import app
+from werkzeug.exceptions import NotFound
 
 
 
@@ -59,17 +60,18 @@ def create_wishlist():
         check_content_type("application/json")
         app.logger.info("Getting json data from API call")
         data = request.get_json()
-
-    newWishList = db_wishlist_obj.insert_one(data)
+    
+    if data["items"]==[]:
+        data = Wishlist(name=data["name"], customer_id=data["customer_id"])
+    else:
+        wishlist = Wishlist()
+        data = wishlist.deserialize(data)
+    data.save()
 
     location_url="location_url"
 
     return make_response(
-        jsonify(
-            id=str(newWishList.inserted_id),
-            name=data['name'],
-            customer_id=data['customer_id']
-        ), status.HTTP_201_CREATED, {"Location": location_url}
+        jsonify(data.serialize()), status.HTTP_201_CREATED, {"Location": location_url}
     )
 
 @app.route('/wishlists/all', methods=['GET'])
@@ -97,6 +99,69 @@ def list_wishlists():
  
     app.logger.info("Returning %d wishlist_array", len(results))
     return make_response(jsonify(results), status.HTTP_200_OK,{})
+
+
+######################################################################
+# UPDATE AN EXISTING WISHLIST
+######################################################################
+@app.route("/wishlists/<string:wishlist_id>", methods=["PUT"])
+def update_wishlists(wishlist_id):
+    """
+    Update a Wishlist
+    This endpoint will update a Wishlist based the body that is posted
+    """
+    app.logger.info("Request to update wishlist with id: %s", wishlist_id)
+    check_content_type("application/json")
+
+    wishlist = Wishlist.find(wishlist_id)
+    if not wishlist:
+        raise NotFound("Wishlist with id '{}' was not found.".format(wishlist_id))
+    
+    old_name=wishlist.name
+
+    # new name
+    content = request.get_json()
+    wishlist.name = content["name"]
+
+    # Rename if the new name is different
+    if old_name!=wishlist.name:
+        wishlists = Wishlist.objects.all()
+        exist = False
+        wishlists_name = []
+        for i in wishlists:
+            wishlists_name.append(i.name)
+            if i.name==wishlist.name:
+                exist = True
+        if exist:
+            next = 2
+            while 1:
+                if (wishlist.name + " {}".format(next)) in wishlists_name:
+                    next+=1
+                else: break
+            wishlist.name = wishlist.name + " {}".format(next)
+
+    wishlist.save()
+
+    app.logger.info("Wishlist with ID [%s] updated.", wishlist._id)
+    return make_response(jsonify(wishlist.serialize()), status.HTTP_200_OK)
+
+
+######################################################################
+# DELETE A WISHLIST
+######################################################################
+@app.route("/wishlists/<string:wishlist_id>", methods=["DELETE"])
+def delete_wishlists(wishlist_id):
+    """
+    Delete a Wishlist
+    This endpoint will delete a Wishlist based the id specified in the path
+    """
+    app.logger.info("Request to delete wishlist with id: %s", wishlist_id)
+    wishlist = Wishlist.find(wishlist_id)
+    if wishlist:
+        wishlist.delete()
+    app.logger.info("Wishlist with ID [%s] delete complete.", wishlist_id)
+    return make_response("", status.HTTP_204_NO_CONTENT)
+
 
 
 def check_content_type(content_type):
