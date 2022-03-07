@@ -232,6 +232,26 @@ def delete_item_from_wishlist(wishlist_id, item_id):
     return make_response(jsonify(wishlist.serialize()), status.HTTP_204_NO_CONTENT)
 
 
+@app.route("/wishlists/<wishlists_id>", methods=["GET"])
+def get_wishlist_details(wishlists_id):
+    # db_obj = client.wishlists
+    # db_wishlist_obj = db_obj.wishlist
+    """
+    Retrieve a single Pet
+    This endpoint will return a Pet based on it's id
+    """
+    app.logger.info("Request to Retrieve a pet with id [%s]", wishlists_id)
+    result = Wishlist.find(wishlists_id)
+    
+    if not result:
+        # raise NotFound("Wishlist with id '{}' was not found.".format(wishlists_id))
+        return make_response(
+            jsonify(status=status.HTTP_404_NOT_FOUND, error="Not Found", message="Wishlist with id '{}' was not found.".format(wishlists_id)),
+            status.HTTP_404_NOT_FOUND,
+        )
+    return make_response(jsonify(result.serialize()), status.HTTP_200_OK)
+
+    
 def check_content_type(content_type):
     """Checks that the media type is correct"""
     if "Content-Type" not in request.headers:

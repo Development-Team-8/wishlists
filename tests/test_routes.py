@@ -176,6 +176,7 @@ class TestWishlistServer(TestCase):
         self.assertEqual(found, True)
 
 
+
     def test_delete_single_item_from_wishlist(self):
         """Delete item from Wishlist"""
 
