@@ -163,6 +163,74 @@ def delete_wishlists(wishlist_id):
     return make_response("", status.HTTP_204_NO_CONTENT)
 
 
+######################################################################
+# ADD AN ITEM TO WISHLIST
+######################################################################
+@app.route("/wishlists/<string:wishlist_id>/item=<int:item_id>", methods=["PUT"])
+def add_item_from_wishlist(wishlist_id, item_id):
+    """
+    Add an item to a Wishlist
+    """
+    app.logger.info("Request to add the item with id %s to the wishlist with id: %s", item_id, wishlist_id)
+    check_content_type("application/json")
+
+    wishlist = Wishlist.find(wishlist_id)
+    if not wishlist:
+        raise NotFound("Wishlist with id '{}' was not found.".format(wishlist_id))
+
+    item = Item.find(item_id)
+    if not item:
+        raise NotFound("Item with id '{}' was not found.".format(item_id))
+
+    wishlist.items.append(item)
+
+    wishlist.save()
+
+    app.logger.info("Item with ID [%s] has been added to wishlist with ID [%s].", item_id, wishlist_id)
+    return make_response(jsonify(wishlist.serialize()), status.HTTP_200_OK)
+
+######################################################################
+# REMOVE AN ITEM FROM WISHLIST
+######################################################################
+@app.route("/wishlists/<string:wishlist_id>/item=<int:item_id>", methods=["DELETE"])
+def delete_item_from_wishlist(wishlist_id, item_id):
+    """
+    Remove an item from a Wishlist
+    """
+    app.logger.info("Request to remove the item with id %s from the wishlist with id: %s", item_id, wishlist_id)
+    check_content_type("application/json")
+
+    wishlist = Wishlist.find(wishlist_id)
+    if not wishlist:
+        raise NotFound("Wishlist with id '{}' was not found.".format(wishlist_id))
+
+    item = Item.find(item_id)
+    if not item:
+        raise NotFound("Item with id '{}' was not found.".format(item_id))
+
+    found=False
+    target = Item()
+    len = 0
+
+    for i in wishlist.items:
+        len+=1
+        if i.item_id==item_id:
+            found=True
+            target=i
+
+    if not found:
+        raise NotFound("Item with id '{}' was not found from wishlist with id '{}'.".format(item_id, wishlist_id))
+    
+    if len==1:
+        wishlist=Wishlist(_id=wishlist._id, name=wishlist.name, customer_id=wishlist.customer_id)
+    else:
+        wishlist.items.remove(target)
+    
+    wishlist.save()
+
+    app.logger.info("Item with ID [%s] has been removed from wishlist with ID [%s].", item_id, wishlist_id)
+    return make_response(jsonify(wishlist.serialize()), status.HTTP_204_NO_CONTENT)
+
 
 def check_content_type(content_type):
     """Checks that the media type is correct"""

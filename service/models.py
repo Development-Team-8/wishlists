@@ -54,6 +54,18 @@ class Item(MongoModel):
             )
 
         return self
+    
+    @classmethod
+    def find(cls, item_id: int):
+        """Query that finds Items by their id"""
+        try:
+            results = cls.objects.raw({"_id": item_id})
+            if results.count():
+                return results[0]
+            else:
+                return None
+        except InvalidId:
+            return None
 
 class Wishlist(MongoModel):
 
@@ -109,7 +121,7 @@ class Wishlist(MongoModel):
     ######################################################################
     @classmethod
     def find(cls, wishlist_id: str):
-        """Query that finds Pets by their id"""
+        """Query that finds Wishlists by their id"""
         try:
             results = cls.objects.raw({"_id": ObjectId(wishlist_id)})
             if results.count():
