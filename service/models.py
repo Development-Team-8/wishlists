@@ -107,7 +107,7 @@ class Wishlist(MongoModel):
             raise DataValidationError("Invalid wishlist: missing " + error.args[0])
         except TypeError as error:
             raise DataValidationError(
-                "Invalid wishlist: body of request contained bad or no data"
+                "Invalid pet: body of request contained bad or no data"
             )
 
         # if there is no id and the data has one, assign it
