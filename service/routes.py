@@ -1,6 +1,6 @@
 import os
 
-from flask import abort, json, jsonify, make_response, request, url_for
+from flask import abort, jsonify, make_response, request, url_for
 from pymodm.connection import connect
 from pymongo import MongoClient
 from werkzeug.exceptions import NotFound
@@ -24,8 +24,8 @@ def index():
     return jsonify(
         status=status.HTTP_200_OK,
         message="Wishlist Service",
-        version="1.0.0"
-        #TODO: Add resource URL once implemented using url_for
+        version="1.0.0",
+        url=url_for("list_wishlists", _external=True)
     )
 
 
