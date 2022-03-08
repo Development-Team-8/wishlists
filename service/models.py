@@ -86,7 +86,7 @@ class Wishlist(MongoModel):
         data = {
             "name": self.name,
             "customer_id": self.customer_id,
-            "items": list(map(lambda i: i.serialize(), self.items))
+            "items": [x for x in map(lambda i: i.serialize() if i is not None else None, self.items) if x is not None]
         }
 
         if self._id:
@@ -130,5 +130,24 @@ class Wishlist(MongoModel):
                 return None
         except InvalidId:
             return None
+
+
+    @classmethod
+    def find_all(cls):
+        """Query that finds Wishlists by their id"""
+        results = cls.objects.all()
+        return results
+
+    @classmethod
+    def find_by_name(cls, name: str):
+        """Query that finds Wishlists by their id"""
+        results = cls.objects.raw({"name": name})
+        return results
+
+    @classmethod
+    def find_by_customer_id(cls, customer_id: str):
+        """Query that finds Wishlists by their id"""
+        results = cls.objects.raw({"customer_id": customer_id})
+        return results
 
     #Add any more find methods as needed:

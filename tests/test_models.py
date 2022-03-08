@@ -287,6 +287,49 @@ class TestWishlists(unittest.TestCase):
         wishlist = Wishlist.find(ObjectId())
         self.assertIs(wishlist, None)
 
+    def test_find_all(self):
+        """Find a Wishlist by id"""
+        saved_wishlist = Wishlist("foo", "bar")
+        saved_wishlist.save()
+        saved_wishlist2 = Wishlist("foo", "bar")
+        saved_wishlist2.save()
+        wishlists = Wishlist.find_all()
+        self.assertIsNot(wishlists, None)
+        self.assertEqual(wishlists.count(), 2)
+
+    def test_find_all_with_no_wishlists(self):
+        """Find a Wishlist with empty database"""
+        wishlists = Wishlist.find_all()
+        self.assertIs(wishlists.count(),0)
+
+    def test_find_by_name(self):
+        """Find a Wishlist by name"""
+        saved_wishlist = Wishlist("foo", "bar")
+        saved_wishlist.save()
+        wishlists = Wishlist.find_by_name(saved_wishlist.name)
+        self.assertIsNot(wishlists, None)
+        for wishlist in wishlists:
+            self.assertEqual(wishlist.name, "foo")
+
+    def test_find_by_name_with_no_wishlists(self):
+        """Find a Wishlist with empty database"""
+        wishlists = Wishlist.find_by_name("abc")
+        self.assertIs(wishlists.count(), 0)
+
+    def test_find_by_customer_id(self):
+        """Find a Wishlist by customer_id"""
+        saved_wishlist = Wishlist("foo", "bar")
+        saved_wishlist.save()
+        wishlists = Wishlist.find_by_customer_id(saved_wishlist.customer_id)
+        self.assertIsNot(wishlists, None)
+        for wishlist in wishlists:
+            self.assertEqual(wishlist.customer_id, saved_wishlist.customer_id)
+
+    def test_find_by_cutomer_id_with_no_wishlists(self):
+        """Find a Wishlist with empty database"""
+        wishlists = Wishlist.find_by_customer_id("bar")
+        self.assertIs(wishlists.count(),0)
+
     def test_wishlist_invalid_id(self):
         """Find a Wishlist with invalid id"""
         wishlist = Wishlist.find("2")
