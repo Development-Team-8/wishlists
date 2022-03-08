@@ -1,15 +1,14 @@
-import json
-from flask import jsonify, request, url_for,json,  abort, make_response
-from pymongo import MongoClient
-from pymodm.connection import connect
 import os
-from datetime import datetime
-from service.models import Item, Wishlist
-from service import status
-from . import app
+
+from flask import abort, json, jsonify, make_response, request, url_for
+from pymodm.connection import connect
+from pymongo import MongoClient
 from werkzeug.exceptions import NotFound
 
+from service import status
+from service.models import Item, Wishlist
 
+from . import app
 
 # Get the database from the environment (12 factor)
 DATABASE_URI = os.getenv("DATABASE_URI", "mongodb://root:root@localhost:27017/wishlists?authSource=admin")
@@ -29,17 +28,6 @@ def index():
         #TODO: Add resource URL once implemented using url_for
     )
 
-
-@app.route("/mongodb/stats")
-def mongodb_status():
-    """Returns basic stats about mongodb"""
-    db = client.admin
-    serverStatusResult = db.command("serverStatus")
-    return jsonify(
-        version=serverStatusResult["version"],
-        uptime=serverStatusResult["uptime"],
-        message="MongoDB Stats"
-    )
 
 @app.route('/wishlists', methods=['POST'])
 def create_wishlist():
