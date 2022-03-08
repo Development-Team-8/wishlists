@@ -145,8 +145,8 @@ def delete_wishlists(wishlist_id):
 ######################################################################
 # ADD AN ITEM TO WISHLIST
 ######################################################################
-@app.route("/wishlists/<string:wishlist_id>/item=<int:item_id>", methods=["PUT"])
-def add_item_from_wishlist(wishlist_id, item_id):
+@app.route("/wishlists/<string:wishlist_id>/items/<int:item_id>", methods=["PUT"])
+def add_item_to_wishlist(wishlist_id, item_id):
     """
     Add an item to a Wishlist
     """

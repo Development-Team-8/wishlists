@@ -173,7 +173,7 @@ class TestWishlistServer(TestCase):
         new_wishlist = resp.get_json()
         logging.debug(new_wishlist)
         resp = self.app.put(
-            "{0}/{1}/{2}".format(BASE_URL, new_wishlist["_id"],"item=1"), content_type=CONTENT_TYPE_JSON
+            "{0}/{1}/{2}/{3}".format(BASE_URL, new_wishlist["_id"],"items","1"), content_type=CONTENT_TYPE_JSON
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
