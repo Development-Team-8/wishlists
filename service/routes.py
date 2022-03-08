@@ -171,7 +171,7 @@ def add_item_from_wishlist(wishlist_id, item_id):
 ######################################################################
 # REMOVE AN ITEM FROM WISHLIST
 ######################################################################
-@app.route("/wishlists/<string:wishlist_id>/item=<int:item_id>", methods=["DELETE"])
+@app.route("/wishlists/<string:wishlist_id>/items/<int:item_id>", methods=["DELETE"])
 def delete_item_from_wishlist(wishlist_id, item_id):
     """
     Remove an item from a Wishlist

@@ -205,7 +205,7 @@ class TestWishlistServer(TestCase):
         new_wishlist = resp.get_json()
         logging.debug(new_wishlist)
         resp = self.app.delete(
-            "{0}/{1}/{2}".format(BASE_URL, new_wishlist["_id"],"item=1"), content_type=CONTENT_TYPE_JSON
+            "{0}/{1}/{2}/{3}".format(BASE_URL, new_wishlist["_id"],"items","1"), content_type=CONTENT_TYPE_JSON
         )
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
@@ -235,7 +235,7 @@ class TestWishlistServer(TestCase):
         new_wishlist = resp.get_json()
         logging.debug(new_wishlist)
         resp = self.app.delete(
-            "{0}/{1}/{2}".format(BASE_URL, new_wishlist["_id"],"item=1"), content_type=CONTENT_TYPE_JSON
+            "{0}/{1}/{2}/{3}".format(BASE_URL, new_wishlist["_id"],"items","1"), content_type=CONTENT_TYPE_JSON
         )
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
@@ -265,7 +265,7 @@ class TestWishlistServer(TestCase):
         new_wishlist = resp.get_json()
         logging.debug(new_wishlist)
         resp = self.app.delete(
-            "{0}/{1}/{2}".format(BASE_URL, new_wishlist["_id"],"item=2"), content_type=CONTENT_TYPE_JSON
+            "{0}/{1}/{2}/{3}".format(BASE_URL, new_wishlist["_id"],"items","2"), content_type=CONTENT_TYPE_JSON
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
