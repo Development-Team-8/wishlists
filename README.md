@@ -17,3 +17,22 @@ Clone this repo and run `code .` in the directory to launch VS Code. Click on 'R
    `nosetests --with-coverage --cover-package=service`
 - To see the code coverage report, execute:</br> 
   `coverage report -m`
+
+## Files in the project
+
+* service/routes.py -- the main Service routes using Python Flask
+* service/models.py -- the data model
+* tests/test_routes.py -- test cases against the Wishlist service
+* tests/test_models.py -- test cases against the Wishlist model  
+
+## Endpoints
+
+| Endpoint | Payload | Error Codes | Description |
+| -------- | ----------- | ----------- | ------------ |
+| GET /   |  None  |  NONE  |  The root URL of the service |
+| POST /wishlists | {</br>"name": "name", "customer_id": "customer_id", items:[]</br>} | 415: Unsupported Media TYPE | Creates a new wishlist |
+| GET /wishlists | None | None | Returns a list of all the wishlists |
+| PUT /wishlists/<string:wishlist_id> | None | 415: Unsupported Media TYPE | Updates a wishlist |
+| DELETE /wishlists/<string:wishlist_id> | None | None | Deletes a wishlist |
+| PUT /wishlists/<string:wishlist_id>/item=<int:item_id> | None | 415: Unsupported Media TYPE | Add an item to the wishlist |
+| DELETE /wishlists/<string:wishlist_id>/item=<int:item_id> | None | 415: Unsupported Media TYPE | Remove an item from wishlist |
