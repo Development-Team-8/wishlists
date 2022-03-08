@@ -52,6 +52,10 @@ class Item(MongoModel):
             raise DataValidationError(
                 "Invalid item: body of request contained bad or no data"
             )
+        except ValueError as error:
+            raise DataValidationError(
+                "Invalid date {}: date should match format %m/%d/%Y, %H:%M:%S".format(data["date_added"])
+            )
 
         return self
     
