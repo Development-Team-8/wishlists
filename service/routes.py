@@ -48,7 +48,7 @@ def create_wishlist():
         check_content_type("application/json")
         app.logger.info("Getting json data from API call")
         data = request.get_json()
-    
+    Wishlist().deserialize(data)
     if "items" not in data.keys() or data["items"]==[]:
         data = Wishlist(name=data["name"], customer_id=data["customer_id"])
     else:
@@ -269,7 +269,7 @@ def list_items(wishlist_id):
     if not wishlist:
         raise NotFound("Wishlist with id '{}' was not found.".format(wishlist_id))
 
-    results = [i.serialize() for i in wishlist.items]
+    results = [i.serialize() if i is not None else None for i in wishlist.items if i is not None]
     app.logger.info("Returning %d items", len(wishlist.items))
     return make_response(jsonify(results), status.HTTP_200_OK,{})
 

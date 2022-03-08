@@ -4,7 +4,7 @@ from datetime import datetime
 from unittest import TestCase
 
 from pymodm.connection import connect
-from service import routes, status
+from service import routes, status, error_handlers
 from service.models import DataValidationError, Item, Wishlist
 from werkzeug.datastructures import ImmutableMultiDict, MultiDict
 
@@ -35,6 +35,11 @@ class TestWishlistServer(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(data["message"], "Wishlist Service")
+
+    def test_method_not_allowed(self):
+        """Test the Method Not Allowed"""
+        resp = self.app.delete("/")
+        self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
     
 
     def test_create_wishlist(self):
@@ -44,6 +49,12 @@ class TestWishlistServer(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
         new_json = resp.get_json()
         self.assertEqual(new_json["name"], "books")
+
+    def test_create_wishlist_no_name(self):
+        """Create a new Wishlist"""
+        new_wishlist = {"customer_id": "customer_1", "items": []}
+        resp = self.app.post("/wishlists", json=new_wishlist, content_type=CONTENT_TYPE_JSON)
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
         
 
     def test_create_wishlist_from_formdata(self):
@@ -292,4 +303,25 @@ class TestWishlistServer(TestCase):
         
         id_val = str(ObjectId())
         resp = self.app.get('{}/{}'.format(BASE_URL,id_val))
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_list_items(self):
+        item = Item(item_id=1, item_name='test', price=100, discount=2, description="test", date_added=datetime.now())
+        self.assertTrue(item is not None)
+        self.assertEqual(item.item_id, 1)
+        item.save()
+        test_wishlist = {"name":"123", "customer_id":"bar", "items":[item.serialize()]}
+        resp = self.app.post(
+            BASE_URL, json=test_wishlist, content_type=CONTENT_TYPE_JSON
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        w_id = resp.get_json()["_id"]
+        resp = self.app.get("{}/{}/{}".format(BASE_URL, w_id, "items"))
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp.get_json()[0], item.serialize())
+
+    def test_list_items_no_wishlist(self):
+        w_id = "invalid"
+        resp = self.app.get("{}/{}/{}".format(BASE_URL, w_id, "items"))
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
