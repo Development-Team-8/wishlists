@@ -172,8 +172,8 @@ class TestWishlistServer(TestCase):
         # add the item to the wishlist
         new_wishlist = resp.get_json()
         logging.debug(new_wishlist)
-        resp = self.app.put(
-            "{0}/{1}/{2}".format(BASE_URL, new_wishlist["_id"],"item=1"), content_type=CONTENT_TYPE_JSON
+        resp = self.app.post(
+            "{0}/{1}/{2}".format(BASE_URL, new_wishlist["_id"], "items"), content_type=CONTENT_TYPE_JSON, json={"item_id":1}
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
