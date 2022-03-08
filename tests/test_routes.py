@@ -8,6 +8,8 @@ from service import routes, status
 from service.models import DataValidationError, Item, Wishlist
 from werkzeug.datastructures import ImmutableMultiDict, MultiDict
 
+from bson import ObjectId
+
 logging.disable(logging.CRITICAL)
 
 # Get the database from the environment (12 factor)
@@ -183,6 +185,7 @@ class TestWishlistServer(TestCase):
         self.assertEqual(found, True)
 
 
+
     def test_delete_single_item_from_wishlist(self):
         """Delete item from Wishlist"""
 
@@ -264,4 +267,29 @@ class TestWishlistServer(TestCase):
         resp = self.app.delete(
             "{0}/{1}/{2}".format(BASE_URL, new_wishlist["_id"],"item=2"), content_type=CONTENT_TYPE_JSON
         )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_read_wishlist(self):
+        """Read a Wishlist using id"""
+        wishlist_data = MultiDict()
+        wishlist_data.add("name", "Planes")
+        wishlist_data.add("customer_id", "user123")
+        data = ImmutableMultiDict(wishlist_data)
+        resp = self.app.post(
+            "/wishlists", data=data, content_type=CONTENT_TYPE_FORM
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        data = resp.get_json()
+        id_val = data["_id"]
+        resp = self.app.get('{}/{}'.format(BASE_URL,id_val))
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(data["_id"], id_val)
+        self.assertEqual(data["name"], "Planes")
+        self.assertEqual(data["customer_id"], "user123")
+
+    def test_read_wishlist_not_found(self):
+        
+        id_val = str(ObjectId())
+        resp = self.app.get('{}/{}'.format(BASE_URL,id_val))
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
