@@ -1,13 +1,12 @@
-from unittest import TestCase
 import logging
-from werkzeug.datastructures import MultiDict, ImmutableMultiDict
 import os
 from datetime import datetime
+from unittest import TestCase
 
-from service.models import Item, Wishlist
-from service import routes, status
 from pymodm.connection import connect
-from service.models import Item, Wishlist, DataValidationError
+from service import routes, status
+from service.models import DataValidationError, Item, Wishlist
+from werkzeug.datastructures import ImmutableMultiDict, MultiDict
 
 logging.disable(logging.CRITICAL)
 
@@ -27,6 +26,14 @@ class TestWishlistServer(TestCase):
         connect(DATABASE_URI.replace('wishlists','testwishlist'))
         Wishlist.objects.all().delete()
         Item.objects.all().delete()
+
+    def test_index(self):
+        """Test the Home Page"""
+        resp = self.app.get("/")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(data["message"], "Wishlist Service")
+    
 
     def test_create_wishlist(self):
         """Create a new Wishlist"""

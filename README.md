@@ -15,3 +15,5 @@ Clone this repo and run `code .` in the directory to launch VS Code. Click on 'R
 - The tests can be executed by running `nosetests`
 - To run the tests along with coverage report, run the command:<br/>
    `nosetests --with-coverage --cover-package=service`
+- To see the code coverage report, execute:</br> 
+  `coverage report -m`
