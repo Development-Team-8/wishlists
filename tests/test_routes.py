@@ -129,7 +129,7 @@ class TestWishlistServer(TestCase):
 
     def test_get_wishlist_list(self):
         """Get a list of wishlists"""
-        init_resp = self.app.get("/wishlists/all")
+        init_resp = self.app.get("/wishlists")
         self.assertEqual(init_resp.status_code, status.HTTP_200_OK)
         init_data = init_resp.get_json()
 
@@ -137,16 +137,16 @@ class TestWishlistServer(TestCase):
         wishlist_1.save()
         wishlist_2 = Wishlist(name="music", customer_id="customer_b")
         wishlist_2.save()
-        resp = self.app.get("/wishlists/all")
+        resp = self.app.get("/wishlists")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         # logging.info(data)
-        self.assertEqual(len(data), len(init_data))
-        resp1 = self.app.get("/wishlists/all?name=fruits")
+        self.assertEqual(len(data), len(init_data) + 2)
+        resp1 = self.app.get("/wishlists?name=fruits")
         self.assertEqual(resp1.status_code, status.HTTP_200_OK)
         data1 = resp1.get_json()
         print(data1)
-        resp2 = self.app.get("/wishlists/all?customer_id=customer_a")
+        resp2 = self.app.get("/wishlists?customer_id=customer_a")
         self.assertEqual(resp2.status_code, status.HTTP_200_OK)
         data2 = resp2.get_json()
         print(data2)

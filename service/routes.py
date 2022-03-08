@@ -32,8 +32,8 @@ def index():
 @app.route('/wishlists', methods=['POST'])
 def create_wishlist():
     """creates a wishlist """
-    db_obj = client.wishlist_database
-    db_wishlist_obj = db_obj.wishlists
+    db_obj = client.wishlists
+    db_wishlist_obj = db_obj.wishlist
 
     data = {}
     # Check for form submission data
@@ -62,30 +62,21 @@ def create_wishlist():
         jsonify(data.serialize()), status.HTTP_201_CREATED, {"Location": location_url}
     )
 
-@app.route('/wishlists/all', methods=['GET'])
+@app.route('/wishlists', methods=['GET'])
 def list_wishlists():
     """list all wishlist """
-    db_obj = client.wishlist_database
-    db_wishlist_obj = db_obj.wishlists
- 
     app.logger.info("Request for wishlist list")
     wishlist_array = []
     customer_id = request.args.get("customer_id")
     name = request.args.get("name")
     if customer_id:
-        wishlist_array = db_wishlist_obj.find({"customer_id":customer_id})
+        wishlist_array = Wishlist.find_by_customer_id(customer_id)
     elif name:
-        wishlist_array = db_wishlist_obj.find({"name":name})
+        wishlist_array = Wishlist.find_by_name(name)
     else:
-        wishlist_array = db_wishlist_obj.find()
- 
-    results = []
-    for document in wishlist_array:
-        document['_id']=str(document['_id'])
-        results.append(document)
- 
- 
-    app.logger.info("Returning %d wishlist_array", len(results))
+        wishlist_array = Wishlist.find_all()
+    results = [w.serialize() for w in wishlist_array]
+    app.logger.info("Returning %d wishlist_array", wishlist_array.count())
     return make_response(jsonify(results), status.HTTP_200_OK,{})
 
 
