@@ -147,13 +147,16 @@ def delete_wishlists(wishlist_id):
 ######################################################################
 # ADD AN ITEM TO WISHLIST
 ######################################################################
-@app.route("/wishlists/<string:wishlist_id>/item=<int:item_id>", methods=["PUT"])
-def add_item_from_wishlist(wishlist_id, item_id):
+@app.route("/wishlists/<string:wishlist_id>/items", methods=["POST"])
+def add_item_to_wishlist(wishlist_id):
     """
     Add an item to a Wishlist
     """
-    app.logger.info("Request to add the item with id %s to the wishlist with id: %s", item_id, wishlist_id)
     check_content_type("application/json")
+
+    item_id = request.get_json()["item_id"]
+    
+    app.logger.info("Request to add the item with id %s to the wishlist with id: %s", item_id, wishlist_id)
 
     wishlist = Wishlist.find(wishlist_id)
     if not wishlist:
@@ -173,7 +176,7 @@ def add_item_from_wishlist(wishlist_id, item_id):
 ######################################################################
 # REMOVE AN ITEM FROM WISHLIST
 ######################################################################
-@app.route("/wishlists/<string:wishlist_id>/item=<int:item_id>", methods=["DELETE"])
+@app.route("/wishlists/<string:wishlist_id>/items/<int:item_id>", methods=["DELETE"])
 def delete_item_from_wishlist(wishlist_id, item_id):
     """
     Remove an item from a Wishlist
