@@ -1,5 +1,4 @@
 import os
-import logging
 import unittest
 from datetime import datetime
 from service.models import Item, Wishlist, DataValidationError
@@ -121,6 +120,18 @@ class TestItemModel(unittest.TestCase):
                 "discount": 2,
                 "description": "test",
                 "date_added": date.strftime("%m/%d/%Y, %H:%M:%S")}
+        item = Item()
+        self.assertRaises(DataValidationError, item.deserialize, data)
+
+    def test_deserialize_with_invalid(self):
+        """Deserialize an Item with invalid date"""
+        date = datetime.now()
+        data = {"item_id": 1,
+                "item_name": 'test',
+                "price": 100,
+                "discount": 2,
+                "description": "test",
+                "date_added": "invalid"}
         item = Item()
         self.assertRaises(DataValidationError, item.deserialize, data)
 

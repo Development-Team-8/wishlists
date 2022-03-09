@@ -48,12 +48,14 @@ def create_wishlist():
         check_content_type("application/json")
         app.logger.info("Getting json data from API call")
         data = request.get_json()
-    
-    if data["items"]==[]:
+    Wishlist().deserialize(data)
+    if "items" not in data.keys() or data["items"]==[]:
         data = Wishlist(name=data["name"], customer_id=data["customer_id"])
     else:
         wishlist = Wishlist()
         data = wishlist.deserialize(data)
+        for item in wishlist.items:
+            item.save()
     data.save()
 
     location_url="location_url"
@@ -251,3 +253,23 @@ def check_content_type(content_type):
         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
         "Content-Type must be {}".format(content_type),
     )
+
+
+
+######################################################################
+# LIST ITEMS OF AN EXISTING WISHLIST
+######################################################################
+
+@app.route('/wishlists/<string:wishlist_id>/items', methods=['GET'])
+def list_items(wishlist_id):
+    """list all items in wishlist """
+    app.logger.info("Request for wishlist item list")
+
+    wishlist = Wishlist.find(wishlist_id)
+    if not wishlist:
+        raise NotFound("Wishlist with id '{}' was not found.".format(wishlist_id))
+
+    results = [i.serialize() if i is not None else None for i in wishlist.items if i is not None]
+    app.logger.info("Returning %d items", len(wishlist.items))
+    return make_response(jsonify(results), status.HTTP_200_OK,{})
+
