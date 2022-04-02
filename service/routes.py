@@ -8,7 +8,7 @@ from werkzeug.exceptions import NotFound
 from service import status
 from service.models import Item, Wishlist
 
-from . import app
+from . import app, error_handlers
 
 # Get the database from the environment (12 factor)
 DATABASE_URI = os.getenv("DATABASE_URI", "mongodb://root:root@localhost:27017/wishlists?authSource=admin")
@@ -80,6 +80,41 @@ def list_wishlists():
     results = [w.serialize() for w in wishlist_array]
     app.logger.info("Returning %d wishlist_array", wishlist_array.count())
     return make_response(jsonify(results), status.HTTP_200_OK,{})
+
+
+######################################################################
+# GETS AN ITEM FROM A WISHLIST
+######################################################################
+@app.route('/wishlists/<string:wishlist_id>/items/<int:item_id>', methods=['GET'])
+def get_item_from_wishlist(wishlist_id, item_id):
+    """
+    Gets an item from the specified wishlist
+    """
+    app.logger.info("Request to get an item with id: {} from wishlist with id: {}".format(item_id, wishlist_id))
+    
+    wishlist = Wishlist.find(wishlist_id)
+    if not wishlist:
+        return make_response(
+            jsonify(status=status.HTTP_404_NOT_FOUND, error="Not Found", message="Wishlist with id '{}' was not found.".format(wishlist_id)),
+            status.HTTP_404_NOT_FOUND,
+        )
+
+    item_found = None
+
+    for item in wishlist.items:
+        if item.item_id == item_id:
+            item_found = item;
+            break
+
+    if not item_found:
+        return make_response(
+            jsonify(status=status.HTTP_404_NOT_FOUND, error="Not Found", message="Item with id '{}' was not found in wishlist with id '{}'".format(item_id, wishlist_id)),
+            status.HTTP_404_NOT_FOUND,
+        )
+
+    result = item_found.serialize()
+    app.logger.info("Returning the found item {}", result["item_name"])
+    return make_response(jsonify(result), status.HTTP_200_OK)
 
 
 ######################################################################
