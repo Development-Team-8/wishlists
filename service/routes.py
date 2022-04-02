@@ -8,7 +8,7 @@ from werkzeug.exceptions import NotFound
 from service import status
 from service.models import Item, Wishlist
 
-from . import app, error_handlers
+from . import app
 
 # Get the database from the environment (12 factor)
 DATABASE_URI = os.getenv("DATABASE_URI", "mongodb://root:root@localhost:27017/wishlists?authSource=admin")
