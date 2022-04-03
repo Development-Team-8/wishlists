@@ -46,6 +46,26 @@ def create_wishlist():
         jsonify(data.serialize()), status.HTTP_201_CREATED, {"Location": location_url}
     )
 
+@app.route('/items', methods=['POST'])
+def create_item():
+    """Creates an item"""
+    app.logger.info("Request for creating a new item")
+    check_content_type("application/json")
+    app.logger.info("Getting json data from API call")
+    data = request.get_json()
+    data = Item().deserialize(data)
+    item_id = Item.find(data.item_id)
+    if item_id is not None:
+        return make_response(
+            jsonify(status=status.HTTP_409_CONFLICT, error="Conflict", message="Item with id '{}' already exists".format(data.item_id)),
+            status.HTTP_409_CONFLICT,
+        )
+    data.save()
+    return make_response(
+        jsonify(data.serialize()), status.HTTP_201_CREATED
+    )
+
+
 @app.route('/wishlists', methods=['GET'])
 def list_wishlists():
     """list all wishlist """
