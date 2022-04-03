@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - 49-create-yaml-for-github-actions
   pull_request:
     branches:
       - main
