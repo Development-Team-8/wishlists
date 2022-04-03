@@ -31,31 +31,13 @@ def index():
 
 @app.route('/wishlists', methods=['POST'])
 def create_wishlist():
-    """creates a wishlist """
-    db_obj = client.wishlists
-    db_wishlist_obj = db_obj.wishlist
-
-    data = {}
-    # Check for form submission data
-    if request.headers.get("Content-Type") == "application/x-www-form-urlencoded":
-        app.logger.info("Getting data from form submit")
-        data = {
-            "name": request.form["name"],
-            "customer_id": request.form["customer_id"],
-            "items": [],
-        }
-    else:
-        check_content_type("application/json")
-        app.logger.info("Getting json data from API call")
-        data = request.get_json()
-    Wishlist().deserialize(data)
-    if "items" not in data.keys() or data["items"]==[]:
-        data = Wishlist(name=data["name"], customer_id=data["customer_id"])
-    else:
-        wishlist = Wishlist()
-        data = wishlist.deserialize(data)
-        for item in wishlist.items:
-            item.save()
+    """Creates a wishlist """
+    check_content_type("application/json")
+    app.logger.info("Getting json data from API call")
+    data = request.get_json()
+    
+    wishlist = Wishlist()
+    data = wishlist.deserialize(data)
     data.save()
 
     location_url="location_url"
@@ -103,13 +85,48 @@ def list_wishlists():
 
 
 ######################################################################
+# GETS AN ITEM FROM A WISHLIST
+######################################################################
+@app.route('/wishlists/<string:wishlist_id>/items/<int:item_id>', methods=['GET'])
+def get_item_from_wishlist(wishlist_id, item_id):
+    """
+    Gets an item from the specified wishlist
+    """
+    app.logger.info("Request to get an item with id: {} from wishlist with id: {}".format(item_id, wishlist_id))
+    
+    wishlist = Wishlist.find(wishlist_id)
+    if not wishlist:
+        return make_response(
+            jsonify(status=status.HTTP_404_NOT_FOUND, error="Not Found", message="Wishlist with id '{}' was not found.".format(wishlist_id)),
+            status.HTTP_404_NOT_FOUND,
+        )
+
+    item_found = None
+
+    for item in wishlist.items:
+        if item.item_id == item_id:
+            item_found = item;
+            break
+
+    if not item_found:
+        return make_response(
+            jsonify(status=status.HTTP_404_NOT_FOUND, error="Not Found", message="Item with id '{}' was not found in wishlist with id '{}'".format(item_id, wishlist_id)),
+            status.HTTP_404_NOT_FOUND,
+        )
+
+    result = item_found.serialize()
+    app.logger.info("Returning the found item {}", result["item_name"])
+    return make_response(jsonify(result), status.HTTP_200_OK)
+
+
+######################################################################
 # UPDATE AN EXISTING WISHLIST
 ######################################################################
 @app.route("/wishlists/<string:wishlist_id>", methods=["PUT"])
 def update_wishlists(wishlist_id):
     """
     Update a Wishlist
-    This endpoint will update a Wishlist based the body that is posted
+    This endpoint will update a Wishlist based on the body that is posted
     """
     app.logger.info("Request to update wishlist with id: %s", wishlist_id)
     check_content_type("application/json")
@@ -122,7 +139,7 @@ def update_wishlists(wishlist_id):
 
     # new name
     content = request.get_json()
-    wishlist.name = content["name"]
+    wishlist.name = content["name"] if "name" in content else old_name
 
     # Rename if the new name is different
     if old_name!=wishlist.name:

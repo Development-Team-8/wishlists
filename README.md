@@ -38,3 +38,4 @@ Clone this repo and run `code .` in the directory to launch VS Code. Click on 'R
 | POST /wishlists/<string:wishlist_id>/items | {</br>"item_id": "item_id"</br>} | 415: Unsupported Media TYPE | Add an item to the wishlist |
 | DELETE /wishlists/<string:wishlist_id>/items/<int:item_id> | None | 415: Unsupported Media TYPE | Remove an item from wishlist |
 | POST /items | {</br>"item_id": item_id,</br>"item_name": "item_name",</br>"price": price,</br>"discount": discount,</br>"description": "description",</br>"date_added": "%m/%d/%Y, %H:%M:%S"</br>} | 415: Unsupported Media TYPE | Creates a new Item |
+| GET /wishlists/<string:wishlist_id>/items/<int:item_id> | None | 404: Not Found | Get an item from a Wishlist |

@@ -57,20 +57,6 @@ class TestWishlistServer(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
         
 
-    def test_create_wishlist_from_formdata(self):
-        wishlist_data = MultiDict()
-        wishlist_data.add("name", "Planes")
-        wishlist_data.add("customer_id", "user123")
-        data = ImmutableMultiDict(wishlist_data)
-        resp = self.app.post(
-            "/wishlists", data=data, content_type=CONTENT_TYPE_FORM
-        )
-        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
-        data = resp.get_json()
-        logging.debug("data = %s", data)
-        self.assertEqual(data["name"], "Planes")
-
-
     def test_create_wishlist_no_content_type(self):
         """Create a wishlist with no content type"""
         resp = self.app.post(BASE_URL)
@@ -282,12 +268,9 @@ class TestWishlistServer(TestCase):
 
     def test_read_wishlist(self):
         """Read a Wishlist using id"""
-        wishlist_data = MultiDict()
-        wishlist_data.add("name", "Planes")
-        wishlist_data.add("customer_id", "user123")
-        data = ImmutableMultiDict(wishlist_data)
+        data = {"name": "Planes", "customer_id": "user123"}
         resp = self.app.post(
-            "/wishlists", data=data, content_type=CONTENT_TYPE_FORM
+            "/wishlists", json=data, content_type=CONTENT_TYPE_JSON
         )
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
         data = resp.get_json()
@@ -326,7 +309,6 @@ class TestWishlistServer(TestCase):
         resp = self.app.get("{}/{}/{}".format(BASE_URL, w_id, "items"))
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_create_item(self):
         """Create an Item"""
 
         item = {"item_id":1, "item_name": "test", "price": 0, "discount":0, "description":"test", "date_added": "04/02/2022, 12:45:00"}
@@ -363,3 +345,62 @@ class TestWishlistServer(TestCase):
             "/items", json=item, content_type=CONTENT_TYPE_JSON
         )
         self.assertEqual(resp.status_code, status.HTTP_409_CONFLICT)
+
+    def test_get_item_from_wishlist(self):
+        """Get an item from Wishlist"""
+        item = Item(item_id=1, item_name='test', price=100, discount=2, description="test", date_added=datetime.now())
+        self.assertTrue(item is not None)
+        self.assertEqual(item.item_id, 1)
+        item.save()
+        test_wishlist = {"name":"123", "customer_id":"bar", "items":[item.serialize()]}
+        resp = self.app.post(
+            BASE_URL, json=test_wishlist, content_type=CONTENT_TYPE_JSON
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        wishlist_id = resp.get_json()["_id"]
+        resp = self.app.get("{}/{}/items/{}".format(BASE_URL, wishlist_id, item.item_id))
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        data = resp.get_json()
+
+        self.assertEqual(data["item_name"], "test")
+        self.assertEqual(data["price"], 100)
+        self.assertEqual(data["discount"], 2)
+        self.assertEqual(data["description"], "test")
+        self.assertEqual(data["item_id"], 1)
+
+
+    def test_get_incorrect_item_from_wishlist(self):
+        """Get an incorrect item from Wishlist"""
+
+        item = Item(item_id=1, item_name='test', price=100, discount=2, description="test", date_added=datetime.now())
+        self.assertTrue(item is not None)
+        self.assertEqual(item.item_id, 1)
+        item.save()
+        test_wishlist = {"name":"123", "customer_id":"bar", "items":[item.serialize()]}
+        resp = self.app.post(
+            BASE_URL, json=test_wishlist, content_type=CONTENT_TYPE_JSON
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        wishlist_id = resp.get_json()["_id"]
+        resp = self.app.get("{}/{}/items/{}".format(BASE_URL, wishlist_id, -1))
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_item_from_incorrect_wishlist(self):
+        """Get an item from incorrect Wishlist"""
+
+        item = Item(item_id=1, item_name='test', price=100, discount=2, description="test", date_added=datetime.now())
+        self.assertTrue(item is not None)
+        self.assertEqual(item.item_id, 1)
+        item.save()
+        test_wishlist = {"name":"123", "customer_id":"bar", "items":[item.serialize()]}
+        resp = self.app.post(
+            BASE_URL, json=test_wishlist, content_type=CONTENT_TYPE_JSON
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        wishlist_id = resp.get_json()["_id"]
+        resp = self.app.get("{}/{}/items/{}".format(BASE_URL, -1, item.item_id))
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
