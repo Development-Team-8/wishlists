@@ -64,6 +64,20 @@ def create_wishlist():
         jsonify(data.serialize()), status.HTTP_201_CREATED, {"Location": location_url}
     )
 
+@app.route('/items', methods=['POST'])
+def create_item():
+    """Creates an item"""
+    app.logger.info("Request for creating a new item")
+    check_content_type("application/json")
+    app.logger.info("Getting json data from API call")
+    data = request.get_json()
+    data = Item().deserialize(data)
+    data.save()
+    return make_response(
+        jsonify(data.serialize()), status.HTTP_201_CREATED
+    )
+
+
 @app.route('/wishlists', methods=['GET'])
 def list_wishlists():
     """list all wishlist """

@@ -325,3 +325,19 @@ class TestWishlistServer(TestCase):
         w_id = "invalid"
         resp = self.app.get("{}/{}/{}".format(BASE_URL, w_id, "items"))
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_create_item(self):
+        """Create an Item"""
+
+        item = {"item_id":1, "item_name": "test", "price": 0, "discount":0, "description":"test", "date_added": "04/02/2022, 12:45:00"}
+        self.assertTrue(item is not None)
+        resp = self.app.post(
+            "/items", json=item, content_type=CONTENT_TYPE_JSON
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        data = resp.get_json()
+        self.assertEqual(data["item_name"], "test")
+        self.assertEqual(data["item_id"], 1)
+        self.assertEqual(data["price"], 0)
+        self.assertEqual(data["discount"], 0)
+        self.assertEqual(data["description"], "test")
