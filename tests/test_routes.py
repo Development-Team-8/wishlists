@@ -341,3 +341,25 @@ class TestWishlistServer(TestCase):
         self.assertEqual(data["price"], 0)
         self.assertEqual(data["discount"], 0)
         self.assertEqual(data["description"], "test")
+
+
+    def test_create_existing_item(self):
+        """Create an Item with existing id"""
+
+        item = {"item_id":1, "item_name": "test", "price": 0, "discount":0, "description":"test", "date_added": "04/02/2022, 12:45:00"}
+        self.assertTrue(item is not None)
+        resp = self.app.post(
+            "/items", json=item, content_type=CONTENT_TYPE_JSON
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        data = resp.get_json()
+        self.assertEqual(data["item_name"], "test")
+        self.assertEqual(data["item_id"], 1)
+        self.assertEqual(data["price"], 0)
+        self.assertEqual(data["discount"], 0)
+        self.assertEqual(data["description"], "test")
+
+        resp = self.app.post(
+            "/items", json=item, content_type=CONTENT_TYPE_JSON
+        )
+        self.assertEqual(resp.status_code, status.HTTP_409_CONFLICT)

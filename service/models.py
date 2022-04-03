@@ -37,6 +37,7 @@ class Item(MongoModel):
 
         :param data: a Python dictionary representing an Item.
         """
+        logger.info("deserialize(%s)", data)
         try:
             self.item_id = data["item_id"]
             self.item_name = data["item_name"]

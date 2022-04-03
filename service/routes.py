@@ -72,6 +72,12 @@ def create_item():
     app.logger.info("Getting json data from API call")
     data = request.get_json()
     data = Item().deserialize(data)
+    item_id = Item.find(data.item_id)
+    if item_id is not None:
+        return make_response(
+            jsonify(status=status.HTTP_409_CONFLICT, error="Conflict", message="Item with id '{}' already exists".format(data.item_id)),
+            status.HTTP_409_CONFLICT,
+        )
     data.save()
     return make_response(
         jsonify(data.serialize()), status.HTTP_201_CREATED
