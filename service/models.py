@@ -79,7 +79,7 @@ class Wishlist(MongoModel):
     ##################################################
     name = fields.CharField(required=True)
     customer_id = fields.CharField(required=True)
-    items = fields.ListField(fields.ReferenceField(model=Item))
+    items = fields.ListField(fields.ReferenceField(model=Item), blank=True)
 
     ##################################################
     # INSTANCE METHODS
@@ -106,7 +106,7 @@ class Wishlist(MongoModel):
         try:
             self.name = data["name"]
             self.customer_id = data["customer_id"]
-            self.items = list(map(lambda i: Item().deserialize(i), data["items"]))
+            self.items = list(map(lambda i: Item().deserialize(i), data["items"] if "items" in data else []))
         except KeyError as error:
             raise DataValidationError("Invalid wishlist: missing " + error.args[0])
         except TypeError as error:

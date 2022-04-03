@@ -57,20 +57,6 @@ class TestWishlistServer(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
         
 
-    def test_create_wishlist_from_formdata(self):
-        wishlist_data = MultiDict()
-        wishlist_data.add("name", "Planes")
-        wishlist_data.add("customer_id", "user123")
-        data = ImmutableMultiDict(wishlist_data)
-        resp = self.app.post(
-            "/wishlists", data=data, content_type=CONTENT_TYPE_FORM
-        )
-        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
-        data = resp.get_json()
-        logging.debug("data = %s", data)
-        self.assertEqual(data["name"], "Planes")
-
-
     def test_create_wishlist_no_content_type(self):
         """Create a wishlist with no content type"""
         resp = self.app.post(BASE_URL)
@@ -282,12 +268,9 @@ class TestWishlistServer(TestCase):
 
     def test_read_wishlist(self):
         """Read a Wishlist using id"""
-        wishlist_data = MultiDict()
-        wishlist_data.add("name", "Planes")
-        wishlist_data.add("customer_id", "user123")
-        data = ImmutableMultiDict(wishlist_data)
+        data = {"name": "Planes", "customer_id": "user123"}
         resp = self.app.post(
-            "/wishlists", data=data, content_type=CONTENT_TYPE_FORM
+            "/wishlists", json=data, content_type=CONTENT_TYPE_JSON
         )
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
         data = resp.get_json()
