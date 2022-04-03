@@ -1,3 +1,5 @@
+![CI Build TDD](https://github.com/Development-Team-8/wishlists/actions/workflows/tdd.yml/badge.svg)
+
 # wishlists
 
 The wishlists resource allows customers to create a collection of products that they wish they had
