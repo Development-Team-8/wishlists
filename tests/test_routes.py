@@ -139,18 +139,54 @@ class TestWishlistServer(TestCase):
         resp = self.app.get("/wishlists")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
-        # logging.info(data)
+       
         self.assertEqual(len(data), len(init_data) + 2)
-        resp1 = self.app.get("/wishlists?name=fruits")
+      
+    
+    def test_get_wishlist_list_by_name(self):
+        """Query wishlists by name"""
+        init_resp = self.app.get("/wishlists")
+        self.assertEqual(init_resp.status_code, status.HTTP_200_OK)
+        init_data = init_resp.get_json()
+
+        wishlist_1 = Wishlist(name="colors", customer_id="cust_1")
+        wishlist_1.save()
+        wishlist_2 = Wishlist(name="music", customer_id="cust_2")
+        wishlist_2.save()
+        wishlist_3 = Wishlist(name="colors", customer_id="cust_3")
+        wishlist_3.save()
+        resp = self.app.get("/wishlists")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+       
+        self.assertEqual(len(data), len(init_data) + 3)
+        resp1 = self.app.get("/wishlists?name=colors")
         self.assertEqual(resp1.status_code, status.HTTP_200_OK)
         data1 = resp1.get_json()
         print(data1)
-        resp2 = self.app.get("/wishlists?customer_id=customer_a")
-        self.assertEqual(resp2.status_code, status.HTTP_200_OK)
-        data2 = resp2.get_json()
-        print(data2)
-    
-    
+
+    def test_get_wishlist_list_by_id(self):
+        """Query wishlists by name"""
+        init_resp = self.app.get("/wishlists")
+        self.assertEqual(init_resp.status_code, status.HTTP_200_OK)
+        init_data = init_resp.get_json()
+
+        wishlist_1 = Wishlist(name="movies", customer_id="1")
+        wishlist_1.save()
+        wishlist_2 = Wishlist(name="series", customer_id="2")
+        wishlist_2.save()
+        wishlist_3 = Wishlist(name="drama", customer_id="1")
+        wishlist_3.save()
+        resp = self.app.get("/wishlists")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+       
+        self.assertEqual(len(data), len(init_data) + 3)
+        resp1 = self.app.get("/wishlists?customer_id=1")
+        self.assertEqual(resp1.status_code, status.HTTP_200_OK)
+        data1 = resp1.get_json()
+        print(data1)
+
     def test_add_item_to_wishlist(self):
         """Add item to Wishlist"""
 
