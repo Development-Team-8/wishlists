@@ -28,7 +28,9 @@ def index():
         url=url_for("list_wishlists", _external=True)
     )
 
-
+######################################################################
+# CREATE A WISHLIST
+######################################################################
 @app.route('/wishlists', methods=['POST'])
 def create_wishlist():
     """Creates a wishlist """
@@ -40,12 +42,13 @@ def create_wishlist():
     data = wishlist.deserialize(data)
     data.save()
 
-    location_url="location_url"
-
     return make_response(
-        jsonify(data.serialize()), status.HTTP_201_CREATED, {"Location": location_url}
+        jsonify(data.serialize()), status.HTTP_201_CREATED
     )
 
+######################################################################
+# CREATE AN ITEM
+######################################################################
 @app.route('/items', methods=['POST'])
 def create_item():
     """Creates an item"""
@@ -65,7 +68,9 @@ def create_item():
         jsonify(data.serialize()), status.HTTP_201_CREATED
     )
 
-
+######################################################################
+# LIST ALL WISHLIST
+######################################################################
 @app.route('/wishlists', methods=['GET'])
 def list_wishlists():
     """list all wishlist """
@@ -79,7 +84,10 @@ def list_wishlists():
         wishlist_array = Wishlist.find_by_name(name)
     else:
         wishlist_array = Wishlist.find_all()
-    results = [w.serialize() for w in wishlist_array]
+
+    results = []
+    for document in wishlist_array:
+        results.append(document.serialize())
     app.logger.info("Returning %d wishlist_array", wishlist_array.count())
     return make_response(jsonify(results), status.HTTP_200_OK,{})
 
