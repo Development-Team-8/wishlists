@@ -404,3 +404,57 @@ class TestWishlistServer(TestCase):
         wishlist_id = resp.get_json()["_id"]
         resp = self.app.get("{}/{}/items/{}".format(BASE_URL, -1, item.item_id))
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    
+    def test_empty_wishlist(self):
+            """Empty Wishlist"""
+
+            # create a wishlist and an item
+            item = Item(item_id=1, item_name='test', price=100, discount=2, description="test", date_added=datetime.now())
+            self.assertTrue(item is not None)
+            self.assertEqual(item.item_id, 1)
+            item.save()
+            
+            test_wishlist = {"name":"123", "customer_id":"bar", "items":[item.serialize()]}
+            resp = self.app.post(
+                BASE_URL, json=test_wishlist, content_type=CONTENT_TYPE_JSON
+            )
+            self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+            # delete the item from the wishlist
+            new_wishlist = resp.get_json()
+            logging.debug(new_wishlist)
+            resp = self.app.put(
+                "{0}/{1}/empty".format(BASE_URL, new_wishlist["_id"]), content_type=CONTENT_TYPE_JSON
+            )
+            self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+
+            updated_wishlist = Wishlist.find(new_wishlist["_id"])
+            found=False
+            if len(updated_wishlist.items)!=0:
+                found=True
+            self.assertEqual(found, False)
+
+    def test_empty_wishlist_wrong_Id(self):
+            """Empty Wishlist"""
+
+            # create a wishlist and an item
+            item = Item(item_id=1, item_name='test', price=100, discount=2, description="test", date_added=datetime.now())
+            self.assertTrue(item is not None)
+            self.assertEqual(item.item_id, 1)
+            item.save()
+            
+            test_wishlist = {"name":"123", "customer_id":"bar", "items":[item.serialize()]}
+            resp = self.app.post(
+                BASE_URL, json=test_wishlist, content_type=CONTENT_TYPE_JSON
+            )
+            self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+            # WRONG Wishlist ID (RANDOM is the ID entered)
+            new_wishlist = resp.get_json()
+            logging.debug(new_wishlist)
+            resp = self.app.put(
+                "{0}/{1}/empty".format(BASE_URL, 'RANDOM'), content_type=CONTENT_TYPE_JSON
+            )
+            self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
