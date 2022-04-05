@@ -190,6 +190,25 @@ def delete_wishlists(wishlist_id):
 
 
 ######################################################################
+# ACTION FOR PUBLIC/PRIVATE STATUS OF WISHLIST
+######################################################################
+
+@app.route("/wishlists/<string:wishlist_id>/public", methods=["PUT"])
+def make_public(wishlist_id):
+    """This action will make a wishlist public"""
+    app.logger.info("Request to make wishlist public with id: %s", wishlist_id)
+    wishlist = Wishlist.find(wishlist_id)
+
+    if not wishlist:
+        raise NotFound("Wishlist with id '{}' was not found.".format(wishlist_id))
+    
+    wishlist.isPublic = True
+    wishlist.save()
+    app.logger.info("Wishlist with ID [%s] is made public.", wishlist_id)
+    return make_response(jsonify(wishlist.serialize()), status.HTTP_200_OK)
+
+
+######################################################################
 # ADD AN ITEM TO WISHLIST
 ######################################################################
 @app.route("/wishlists/<string:wishlist_id>/items", methods=["POST"])

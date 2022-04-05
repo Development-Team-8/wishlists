@@ -69,6 +69,42 @@ class TestWishlistServer(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
     
+    def test_for_public_wishlist(self):
+        "Make a wishlist public"
+        new_wishlist = {"name": "planets", "customer_id": "customer_6", "items": [], "isPublic": False}
+        resp = self.app.post("/wishlists", json=new_wishlist, content_type=CONTENT_TYPE_JSON)
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        new_wishlist = resp.get_json()
+
+        new_wishlist["isPublic"] = True
+        # update
+        resp = self.app.put(
+            "/wishlists/{}/public".format(new_wishlist["_id"]),
+            json=new_wishlist,
+            content_type=CONTENT_TYPE_JSON,
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        updated_wishlist = resp.get_json()
+        self.assertEqual(updated_wishlist["isPublic"], True)
+
+    def test_for_public_wishlist_not_found(self):
+        "Make a wishlist public"
+        new_wishlist = {"name": "planets", "customer_id": "customer_6", "items": [], "isPublic": False}
+        resp = self.app.post("/wishlists", json=new_wishlist, content_type=CONTENT_TYPE_JSON)
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        new_wishlist = resp.get_json()
+
+        new_wishlist["isPublic"] = True
+        # update
+        resp = self.app.put(
+            "/wishlists/{}/public".format("wrong_id"),
+            json=new_wishlist,
+            content_type=CONTENT_TYPE_JSON,
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+        
+
 
     def test_update_wishlist(self):
         """Update an existing Wishlist"""

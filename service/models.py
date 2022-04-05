@@ -80,6 +80,7 @@ class Wishlist(MongoModel):
     name = fields.CharField(required=True)
     customer_id = fields.CharField(required=True)
     items = fields.ListField(fields.ReferenceField(model=Item), blank=True)
+    isPublic = fields.BooleanField(required=False)
 
     ##################################################
     # INSTANCE METHODS
@@ -90,7 +91,8 @@ class Wishlist(MongoModel):
         data = {
             "name": self.name,
             "customer_id": self.customer_id,
-            "items": [x for x in map(lambda i: i.serialize() if i is not None else None, self.items) if x is not None]
+            "items": [x for x in map(lambda i: i.serialize() if i is not None else None, self.items) if x is not None],
+            "isPublic": self.isPublic
         }
 
         if self._id:
@@ -107,6 +109,7 @@ class Wishlist(MongoModel):
             self.name = data["name"]
             self.customer_id = data["customer_id"]
             self.items = list(map(lambda i: Item().deserialize(i), data["items"] if "items" in data else []))
+            self.isPublic = data.get("isPublic", False)
         except KeyError as error:
             raise DataValidationError("Invalid wishlist: missing " + error.args[0])
         except TypeError as error:
