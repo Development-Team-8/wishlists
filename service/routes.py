@@ -310,3 +310,23 @@ def list_items(wishlist_id):
     app.logger.info("Returning %d items", len(wishlist.items))
     return make_response(jsonify(results), status.HTTP_200_OK,{})
 
+@app.route("/wishlists/<string:wishlist_id>/empty", methods=["PUT"])
+def empty_wishlist(wishlist_id):
+    """
+    Remove an item from a Wishlist
+    """
+    app.logger.info("Request to empty the wishlist with id: %s", wishlist_id)
+    check_content_type("application/json")
+
+    wishlist = Wishlist.find(wishlist_id)
+    if not wishlist:
+        raise NotFound("Wishlist with id '{}' was not found.".format(wishlist_id))
+    
+    else:
+        wishlist=Wishlist(_id=wishlist._id, name=wishlist.name, customer_id=wishlist.customer_id)
+    
+    wishlist.save()
+
+    app.logger.info("Wishlist with ID [%s] has been emptied", wishlist_id)
+    return make_response(jsonify(wishlist.serialize()), status.HTTP_204_NO_CONTENT)
+
