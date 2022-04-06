@@ -1,4 +1,5 @@
 import os
+import json
 
 from flask import abort, jsonify, make_response, request, url_for
 from pymodm.connection import connect
@@ -12,6 +13,10 @@ from . import app
 
 # Get the database from the environment (12 factor)
 DATABASE_URI = os.getenv("DATABASE_URI", "mongodb://root:root@localhost:27017/wishlists?authSource=admin")
+
+if 'VCAP_SERVICES' in os.environ:
+    vcap = json.loads(os.environ['VCAP_SERVICES'])
+    DATABASE_URI = vcap['user-provided'][0]['credentials']['url']
 
 client = MongoClient(DATABASE_URI) 
 connect(DATABASE_URI)
