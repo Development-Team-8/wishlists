@@ -9,7 +9,7 @@ Background:
         |   666f6f2d6261722d71757578    | clothes       | 1      | []      | False    |
         |   666f6f2d6261722d71757579   | jewellery      | 2      | []      | False  |
         |   666f6f2d6261722d71757577    | footwear        | 3     | []     | False    |
-        |   666f6f2d6261722d71757576    | games      | 4    | [{"date_added": "04/02/2022, 12:45:00","description": "abc game","discount": 0,"item_id": 89,"item_name": "abc","price": 50}]      | True |
+        |   666f6f2d6261722d71757576    | games      | 4    | []      | True |
 
     Given the following items
         |   item_id |   item_name   |   description |   price   |   discount    |   date_added  |
@@ -20,11 +20,20 @@ Scenario: The server is running
     Then I should see "Wishlist RESTful Service" in the title
     And I should not see "404 Not Found"
 
-Scenario: Search for an item in a wishlist
+Scenario: Update and search for an item in a wishlist
     When I visit the "Home Page"
     And I set the "Item ID" to "77777"
     And I set the "Item Wishlist ID" to "666f6f2d6261722d71757577"
     And I press the "Item-Update" button
-    Then I should see "666f6f2d6261722d71757577" in the "ID" field    
+    Then I should see "666f6f2d6261722d71757577" in the "Wishlist ID" field    
     When I press the "Item-Search" button
     Then I should see "test_item" in the "item search results"
+
+
+Scenario: List wishlists for a specific customer
+    When I visit the "Home Page"
+    And I set the "Wishlist CustomerID" to "4"
+    And I press the "Search" button
+    Then I should see "666f6f2d6261722d71757576" in the "Wishlist ID" field
+    And I should see "games" in the "Wishlist Name" field
+    And I should see "True" in the "Wishlist IsPublic" dropdown
