@@ -71,6 +71,12 @@ class Item(MongoModel):
         except InvalidId:
             return None
 
+    @classmethod
+    def find_all(cls):
+        """Query that finds all items"""
+        results = cls.objects.all()
+        return results
+
 class Wishlist(MongoModel):
 
 

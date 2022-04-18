@@ -33,8 +33,6 @@ class TestWishlistServer(TestCase):
         """Test the Home Page"""
         resp = self.app.get("/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        data = resp.get_json()
-        self.assertEqual(data["message"], "Wishlist Service")
 
     def test_method_not_allowed(self):
         """Test the Method Not Allowed"""
@@ -396,6 +394,40 @@ class TestWishlistServer(TestCase):
         self.assertEqual(data["discount"], 0)
         self.assertEqual(data["description"], "test")
 
+    def test_list_all_items(self):
+        """List all items"""
+        item = {"item_id":1, "item_name": "test", "price": 0, "discount":0, "description":"test", "date_added": "04/02/2022, 12:45:00"}
+        self.assertTrue(item is not None)
+        resp = self.app.post(
+            "/items", json=item, content_type=CONTENT_TYPE_JSON
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        data = resp.get_json()
+        self.assertEqual(data["item_name"], "test")
+        self.assertEqual(data["item_id"], 1)
+        self.assertEqual(data["price"], 0)
+        self.assertEqual(data["discount"], 0)
+        self.assertEqual(data["description"], "test")
+        resp = self.app.get("/items")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp.get_json()[0], item)
+
+    def test_delete_an_item(self):
+        """Delete an item"""
+        item = {"item_id":1, "item_name": "test", "price": 0, "discount":0, "description":"test", "date_added": "04/02/2022, 12:45:00"}
+        self.assertTrue(item is not None)
+        resp = self.app.post(
+            "/items", json=item, content_type=CONTENT_TYPE_JSON
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        data = resp.get_json()
+        self.assertEqual(data["item_name"], "test")
+        self.assertEqual(data["item_id"], 1)
+        self.assertEqual(data["price"], 0)
+        self.assertEqual(data["discount"], 0)
+        self.assertEqual(data["description"], "test")
+        resp = self.app.delete("/items/{}".format(item["item_id"]))
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_create_existing_item(self):
         """Create an Item with existing id"""

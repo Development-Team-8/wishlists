@@ -24,14 +24,9 @@ connect(DATABASE_URI)
 
 @app.route("/")
 def index():
-    """Returns information about the service"""
+    """Base URL for our service"""
     app.logger.info("Request for Base URL")
-    return jsonify(
-        status=status.HTTP_200_OK,
-        message="Wishlist Service",
-        version="1.0.0",
-        url=url_for("list_wishlists", _external=True)
-    )
+    return app.send_static_file("index.html")
 
 ######################################################################
 # CREATE A WISHLIST
@@ -98,6 +93,22 @@ def list_wishlists():
 
 
 ######################################################################
+# LIST ALL ITEMS
+######################################################################
+@app.route('/items', methods=['GET'])
+def list_all_items():
+    """list all items """
+    app.logger.info("Request for item list")
+    item_array = []
+    item_array = Item.find_all()
+    
+    results = []
+    for document in item_array:
+        results.append(document.serialize())
+    app.logger.info("Returning %d item_array", item_array.count())
+    return make_response(jsonify(results), status.HTTP_200_OK,{})
+
+######################################################################
 # GETS AN ITEM FROM A WISHLIST
 ######################################################################
 @app.route('/wishlists/<string:wishlist_id>/items/<int:item_id>', methods=['GET'])
@@ -128,7 +139,7 @@ def get_item_from_wishlist(wishlist_id, item_id):
         )
 
     result = item_found.serialize()
-    app.logger.info("Returning the found item {}", result["item_name"])
+    app.logger.info("Returning the found item %s", result["item_name"])
     return make_response(jsonify(result), status.HTTP_200_OK)
 
 
@@ -191,6 +202,23 @@ def delete_wishlists(wishlist_id):
     if wishlist:
         wishlist.delete()
     app.logger.info("Wishlist with ID [%s] delete complete.", wishlist_id)
+    return make_response("", status.HTTP_204_NO_CONTENT)
+
+
+######################################################################
+# DELETE AN ITEM
+######################################################################
+@app.route("/items/<int:item_id>", methods=["DELETE"])
+def delete_item(item_id):
+    """
+    Delete an item
+    This endpoint will delete an item based the id specified in the path
+    """
+    app.logger.info("Request to delete item with id: %s", item_id)
+    item = Item.find(item_id)
+    if item:
+        item.delete()
+    app.logger.info("Item with ID [%s] delete complete.", item_id)
     return make_response("", status.HTTP_204_NO_CONTENT)
 
 
