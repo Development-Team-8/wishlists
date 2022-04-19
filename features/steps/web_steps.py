@@ -91,7 +91,7 @@ def step_impl(context, name, results):
 
 @then('I should see "{text_string}" in the "{element_name}" field')
 def step_impl(context, text_string, element_name):
-    element_id = ID_PREFIX + element_name.lower().replace(' ', '_')
+    element_id = element_name.lower().replace(' ', '_')
     found = WebDriverWait(context.driver, context.WAIT_SECONDS).until(
         expected_conditions.text_to_be_present_in_element_value(
             (By.ID, element_id),
@@ -99,3 +99,10 @@ def step_impl(context, text_string, element_name):
         )
     )
     expect(found).to_be(True)
+
+
+@then('I should see "{text}" in the "{element_name}" dropdown')
+def step_impl(context, text, element_name):
+    element_id = element_name.lower().replace(' ', '_')
+    element = Select(context.driver.find_element_by_id(element_id))
+    expect(element.first_selected_option.text).to_equal(text)
