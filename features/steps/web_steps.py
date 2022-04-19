@@ -57,6 +57,12 @@ def step_impl(context, element_name, text_string):
     element.clear()
     element.send_keys(text_string)
 
+@then('the "{element_name}" field should be empty')
+def step_impl(context, element_name):
+    element_id = element_name.lower().replace(' ', '_')
+    element = context.driver.find_element_by_id(element_id)
+    expect(element.get_attribute('value')).to_be(u'')
+
 ##################################################################
 # This code works because of the following naming convention:
 # The buttons have an id in the html hat is the button text
@@ -80,6 +86,17 @@ def step_impl(context, name, results):
         )
     )
     expect(found).to_be(True)
+
+@then('I should see the message "{message}"')
+def step_impl(context, message):
+    found = WebDriverWait(context.driver, context.WAIT_SECONDS).until(
+        expected_conditions.text_to_be_present_in_element(
+            (By.ID, 'flash_message'),
+            message
+        )
+    )
+    expect(found).to_be(True)
+
 
 
 ##################################################################
@@ -106,3 +123,26 @@ def step_impl(context, text, element_name):
     element_id = element_name.lower().replace(' ', '_')
     element = Select(context.driver.find_element_by_id(element_id))
     expect(element.first_selected_option.text).to_equal(text)
+
+##################################################################
+# These two function simulate copy and paste
+##################################################################
+@when('I copy the "{element_name}" field')
+def step_impl(context, element_name):
+    element_id = element_name.lower().replace(' ', '_')
+    element = WebDriverWait(context.driver, context.WAIT_SECONDS).until(
+        expected_conditions.presence_of_element_located((By.ID, element_id))
+    )
+    context.clipboard = element.get_attribute('value')
+    logging.info('Clipboard contains: %s', context.clipboard)
+
+@when('I paste the "{element_name}" field')
+def step_impl(context, element_name):
+    element_id = element_name.lower().replace(' ', '_')
+    element = WebDriverWait(context.driver, context.WAIT_SECONDS).until(
+        expected_conditions.presence_of_element_located((By.ID, element_id))
+    )
+    element.clear()
+    element.send_keys(context.clipboard)
+
+    logging.info('Pasted %s in %s', context.clipboard, element_name)
