@@ -35,8 +35,10 @@ Clone this repo and run `code .` in the directory to launch VS Code. Click on 'R
 | GET /   |  None  |  NONE  |  The root URL of the service |
 | POST /wishlists | {</br>"name": "name", "customer_id": "customer_id", items:[]</br>} | 415: Unsupported Media TYPE | Creates a new wishlist |
 | GET /wishlists | None | None | Returns a list of all the wishlists |
+| GET /items | None | None | Returns a list of all the items |
 | PUT /wishlists/<string:wishlist_id> | None | 415: Unsupported Media TYPE | Updates a wishlist |
 | DELETE /wishlists/<string:wishlist_id> | None | None | Deletes a wishlist |
+| DELETE /items/<string:item_id> | None | None | Deletes an item |
 | GET /wishlists/<string:wishlist_id>/items | None | 404: Not Found | List items in the wishlist |
 | POST /wishlists/<string:wishlist_id>/items | {</br>"item_id": "item_id"</br>} | 415: Unsupported Media TYPE | Add an item to the wishlist |
 | DELETE /wishlists/<string:wishlist_id>/items/<int:item_id> | None | 415: Unsupported Media TYPE | Remove an item from wishlist |
