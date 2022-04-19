@@ -48,9 +48,9 @@ jobs:
       - name: Run the server locally
         run: |
           echo "\n*** STARTING APPLICATION ***\n"
-          gunicorn --log-level=critical --bind=0.0.0.0:8080 service:app &
+          gunicorn --log-level=critical --bind=0.0.0.0:8000 service:app &
           sleep 5
-          # curl -I http://localhost:8080/
+          # curl -I http://localhost:8000/
           echo "\n*** SERVER IS RUNNING ***"
         env:
           DATABASE_URI: "mongodb://root:root@mongo:27017/wishlists?authSource=admin"
