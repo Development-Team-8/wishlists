@@ -318,8 +318,8 @@ def get_wishlist_details(wishlists_id):
     # db_obj = client.wishlists
     # db_wishlist_obj = db_obj.wishlist
     """
-    Retrieve a single Pet
-    This endpoint will return a Pet based on it's id
+    Retrieve a single Wishlist
+    This endpoint will return a Wishlist based on it's id
     """
     app.logger.info("Request to Retrieve a pet with id [%s]", wishlists_id)
     result = Wishlist.find(wishlists_id)
