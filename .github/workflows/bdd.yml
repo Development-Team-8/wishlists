@@ -1,0 +1,60 @@
+name: CI Build BDD
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: rofrano/pipeline-selenium:latest
+
+    # Required services    
+    services:
+      # Label used to access the service container
+      mongo:
+        # Docker Hub image
+        image: mongo
+        env:
+          MONGO_INITDB_ROOT_USERNAME: root
+          MONGO_INITDB_ROOT_PASSWORD: root
+          MONGO_INITDB_DATABASE: wishlists
+        ports:
+          - 27017:27017
+        volumes:
+          - mongodb_data_container:/data/db
+
+    # Steps for the build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+            
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip wheel
+          pip install -r requirements.txt
+          apt-get update
+          apt-get install -y curl wget python3-selenium
+
+      - name: Linting
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Run the server locally
+        run: |
+          echo "\n*** STARTING APPLICATION ***\n"
+          gunicorn --log-level=critical --bind=0.0.0.0:8000 service:app &
+          sleep 5
+          curl -I http://localhost:8000/
+          echo "\n*** SERVER IS RUNNING ***"
+        env:
+          DATABASE_URI: "mongodb://root:root@mongo:27017/wishlists?authSource=admin"
+
+      - name: Run unit tests with behave
+        run: behave

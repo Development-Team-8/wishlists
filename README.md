@@ -1,5 +1,5 @@
 [![CI Build TDD](https://github.com/Development-Team-8/wishlists/actions/workflows/tdd.yml/badge.svg)](https://github.com/Development-Team-8/wishlists/actions/workflows/tdd.yml)
-
+[![CI Build BDD](https://github.com/Development-Team-8/wishlists/actions/workflows/bdd.yml/badge.svg)](https://github.com/Development-Team-8/wishlists/actions/workflows/bdd.yml)
 [![codecov](https://codecov.io/gh/Development-Team-8/wishlists/branch/main/graph/badge.svg?token=TQ4RN8ZBN3)](https://codecov.io/gh/Development-Team-8/wishlists)
 # wishlists
 
