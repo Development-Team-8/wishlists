@@ -163,24 +163,8 @@ def update_wishlists(wishlist_id):
 
     # new name
     content = request.get_json()
-    wishlist.name = content["name"] if "name" in content else old_name
 
-    # Rename if the new name is different
-    if old_name!=wishlist.name:
-        wishlists = Wishlist.objects.all()
-        exist = False
-        wishlists_name = []
-        for i in wishlists:
-            wishlists_name.append(i.name)
-            if i.name==wishlist.name:
-                exist = True
-        if exist:
-            next = 2
-            while 1:
-                if (wishlist.name + " {}".format(next)) in wishlists_name:
-                    next+=1
-                else: break
-            wishlist.name = wishlist.name + " {}".format(next)
+    wishlist.deserialize(content)
 
     wishlist.save()
 

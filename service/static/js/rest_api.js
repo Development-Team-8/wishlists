@@ -242,13 +242,17 @@ $(function () {
     // ****************************************
 
     $("#update-btn").click(function () {
+
+        console.log("HELLO");
         
         let wishlist_id = $("#wishlist_id").val();
         let name = $("#wishlist_name").val();
+        let customerid = $("#wishlist_customerid").val();
 
 
         let data = {
-            "name": name
+            "name": name,
+            "customer_id": customerid
         };
 
         $("#flash_message").empty();
