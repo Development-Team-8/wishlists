@@ -97,3 +97,21 @@ Scenario: Update a wishlist
     And I paste the "Wishlist ID" field
     And I press the "Retrieve" button
     Then I should see "new_games" in the "Wishlist Name" field
+
+    
+Scenario: Empty a wishlist
+    When I visit the "Home Page"
+    And I set the "Wishlist CustomerID" to "4"
+    And I press the "Search" button
+    Then I should see "666f6f2d6261722d71757576" in the "Wishlist ID" field
+    And I should see "games" in the "Wishlist Name" field
+    And I should see "True" in the "Wishlist IsPublic" dropdown
+    
+    When I copy the "Wishlist ID" field
+    And I press the "Update" button
+    Then I should see the message "Success"
+    When I press the "Clear" button
+    And I paste the "Wishlist ID" field
+    And I press the "Retrieve" button
+    # TODO:  check from UI wishlist should be empty
+    # Then I should see "new_games" in the "Wishlist Name" field
