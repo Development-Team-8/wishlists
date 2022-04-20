@@ -21,6 +21,7 @@ $(function () {
         $("#wishlist_id").val("");
         $("#wishlist_name").val("");
         $("#wishlist_customerid").val("");
+        $("#wishlist_ispublic").val("");
         $("#item_id").val("");
     }
 
@@ -242,17 +243,16 @@ $(function () {
     // ****************************************
 
     $("#update-btn").click(function () {
-
-        console.log("HELLO");
         
         let wishlist_id = $("#wishlist_id").val();
         let name = $("#wishlist_name").val();
         let customerid = $("#wishlist_customerid").val();
-
+        let isPublic =  $("#wishlist_ispublic").val()=="true";
 
         let data = {
             "name": name,
-            "customer_id": customerid
+            "customer_id": customerid,
+            "isPublic": isPublic
         };
 
         $("#flash_message").empty();
