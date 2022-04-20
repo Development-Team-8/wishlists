@@ -122,7 +122,7 @@ class TestWishlistServer(TestCase):
         resp = self.app.post("/wishlists", json=new_wishlist, content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
-        # rename "xxx" with "foo", the new name should be "foo 3"
+        # rename "xxx" with "foo", the new name should be "foo"
         new_wishlist = resp.get_json()
         logging.debug(new_wishlist)
         new_wishlist["name"] = "foo"
@@ -135,7 +135,7 @@ class TestWishlistServer(TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         updated_wishlist = resp.get_json()
-        self.assertEqual(updated_wishlist["name"], "foo 3")
+        self.assertEqual(updated_wishlist["name"], "foo")
 
     def test_delete_wishlist(self):
         """Delete a Wishlist"""

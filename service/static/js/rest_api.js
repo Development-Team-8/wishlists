@@ -173,4 +173,149 @@ $(function () {
 
     });
 
+    // ****************************************
+    // Create a Wishlist
+    // ****************************************
+
+    $("#create-btn").click(function () {
+
+        let name = $("#wishlist_name").val();
+        let customerid = $("#wishlist_customerid").val();
+
+        let data = {
+            "name": name,
+            "customer_id": customerid,
+            "items": []
+        };
+
+        $("#flash_message").empty();
+        
+        let ajax = $.ajax({
+            type: "POST",
+            url: "/wishlists",
+            contentType: "application/json",
+            data: JSON.stringify(data),
+        });
+
+        ajax.done(function(res){
+            update_form_data(res)
+            flash_message("Success")
+        });
+
+        ajax.fail(function(res){
+            flash_message(res.responseJSON.message)
+        });
+    });
+
+
+    // ****************************************
+    // Delete a Wishlist
+    // ****************************************
+
+
+    $("#delete-btn").click(function () {
+
+        let wishlist_id = $("#wishlist_id").val();
+
+        $("#flash_message").empty();
+
+        let ajax = $.ajax({
+            type: "DELETE",
+            url: `/wishlists/${wishlist_id}`,
+            contentType: "application/json",
+            data: '',
+        })
+
+        ajax.done(function(res){
+            clear_form_data()
+            flash_message("Wishlist has been Deleted!")
+        });
+
+        ajax.fail(function(res){
+            flash_message("Server error!")
+        });
+    });
+
+
+    // ****************************************
+    // Update a Wishlist
+    // ****************************************
+
+    $("#update-btn").click(function () {
+
+        console.log("HELLO");
+        
+        let wishlist_id = $("#wishlist_id").val();
+        let name = $("#wishlist_name").val();
+        let customerid = $("#wishlist_customerid").val();
+
+
+        let data = {
+            "name": name,
+            "customer_id": customerid
+        };
+
+        $("#flash_message").empty();
+
+        let ajax = $.ajax({
+                type: "PUT",
+                url: `/wishlists/${wishlist_id}`,
+                contentType: "application/json",
+                data: JSON.stringify(data)
+            })
+
+        ajax.done(function(res){
+            update_form_data(res)
+            flash_message("Success")
+        });
+
+        ajax.fail(function(res){
+            flash_message(res.responseJSON.message)
+        });
+
+    });
+
+
+
+    // ****************************************
+    // Retrieve a wishlist
+    // ****************************************
+
+    $("#retrieve-btn").click(function () {
+
+        let wishlist_id = $("#wishlist_id").val();
+
+        $("#flash_message").empty();
+
+        let ajax = $.ajax({
+            type: "GET",
+            url: `/wishlists/${wishlist_id}`,
+            contentType: "application/json",
+            data: ''
+        })
+
+        ajax.done(function(res){
+            //alert(res.toSource())
+            update_form_data(res)
+            flash_message("Success")
+        });
+
+        ajax.fail(function(res){
+            clear_form_data()
+            flash_message(res.responseJSON.message)
+        });
+
+    });
+
+
+    // ****************************************
+    // Clear the form
+    // ****************************************
+
+    $("#clear-btn").click(function () {
+        $("#wishlist_id").val("");
+        $("#flash_message").empty();
+        clear_form_data()
+    });
+
 })
