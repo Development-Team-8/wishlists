@@ -1,6 +1,9 @@
 # Dependencies
 Werkzeug==2.0.3
-Flask==2.0.2
+Flask==2.1.1
+Flask-RESTX==0.5.1
+cloudant==2.15.0
+retry==0.9.2
 python-dotenv==0.19.2
 pymongo[srv]==3.12.3
 pymodm==0.4.3
