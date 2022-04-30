@@ -11,6 +11,9 @@ logger = logging.getLogger("flask.app")
 class DataValidationError(Exception):
     """Used for an data validation errors when deserializing"""
 
+class DatabaseConnectionError(Exception):
+    """Custom Exception when database connection fails"""
+
 
 class Item(MongoModel):
     item_id = fields.IntegerField(mongo_name='_id', primary_key=True)

@@ -531,7 +531,7 @@ class TestWishlistServer(TestCase):
             resp = self.app.put(
                 "{0}/{1}/empty".format(BASE_URL, new_wishlist["_id"]), content_type=CONTENT_TYPE_JSON
             )
-            self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+            self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
             updated_wishlist = Wishlist.find(new_wishlist["_id"])
             found=False
