@@ -149,7 +149,7 @@ class TestWishlists(unittest.TestCase):
     """Test Cases for Wishlist Model"""
 
     def setUp(self):
-        connect(DATABASE_URI.replace('wishlists','test'))
+        connect(DATABASE_URI.replace('wishlists?','test?'))
         Wishlist.objects.all().delete()
         Item.objects.all().delete()
 
