@@ -15,7 +15,7 @@ DATABASE_URI = os.getenv("DATABASE_URI", "mongodb://root:root@localhost:27017/wi
 class TestItemModel(unittest.TestCase):
 
     def setUp(self):
-        connect(DATABASE_URI.replace('wishlists','test'))
+        connect(DATABASE_URI.replace('wishlists?','test?'))
     def test_create_an_item(self):
         """Create an item and assert that it exists"""
         item = Item(item_id=1, item_name='test', price=100, discount=2, description="test", date_added=datetime.now())
@@ -149,7 +149,7 @@ class TestWishlists(unittest.TestCase):
     """Test Cases for Wishlist Model"""
 
     def setUp(self):
-        connect(DATABASE_URI.replace('wishlists','test'))
+        connect(DATABASE_URI.replace('wishlists?','test?'))
         Wishlist.objects.all().delete()
         Item.objects.all().delete()
 
