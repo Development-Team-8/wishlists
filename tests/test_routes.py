@@ -25,7 +25,7 @@ class TestWishlistServer(TestCase):
     @classmethod
     def setUp(self):
         self.app = routes.app.test_client()
-        connect(DATABASE_URI.replace('wishlists?','testwishlist?'))
+        # connect(DATABASE_URI.replace('wishlists?','testwishlist?'))
         Wishlist.objects.all().delete()
         Item.objects.all().delete()
 
