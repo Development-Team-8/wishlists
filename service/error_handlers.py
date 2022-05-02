@@ -15,7 +15,6 @@
 Module: error_handlers
 """
 from flask import jsonify
-from service.models import DataValidationError
 from . import app, status
 
 @app.errorhandler(status.HTTP_500_INTERNAL_SERVER_ERROR)
