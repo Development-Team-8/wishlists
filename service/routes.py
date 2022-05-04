@@ -445,7 +445,7 @@ class WishlistPublic(Resource):
 class WishlistEmpty(Resource):
 
     @api.doc('empty_wishlist')
-    @api.response(200, 'Wishlist made public successfully')
+    @api.response(200, 'Wishlist emptied successfully')
     @api.response(404, 'ID not found')
     @api.marshal_with(create_model_wishlist)
     def put(self, wishlist_id):
