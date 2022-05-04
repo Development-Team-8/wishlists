@@ -318,7 +318,7 @@ $(function () {
         $("#flash_message").empty();
 
         let ajax = $.ajax({
-            type: "GET",
+            type: "PUT",
             url: `/wishlists/${wishlist_id}/empty`,
             contentType: "application/json",
             data: ''
